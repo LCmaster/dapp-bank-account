@@ -1,30 +1,27 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-import hre from "hardhat";
+const hre = require("hardhat");
+const fs = require("fs/promises");
 
 async function main() {
-  // const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  // const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  // const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const BankAccount = await hre.ethers.getContractFactory("BankAccount");
+  const bankAccount = await BankAccount.deploy();
 
-  // const lockedAmount = hre.ethers.utils.parseEther("1");
-
-  // const Lock = await hre.ethers.getContractFactory("Lock");
-  // const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  // await lock.deployed();
-
-  // console.log(
-  //   `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  // );
+  await bankAccount.deployed();
+  await writeContractABI(bankAccount)
+  console.log(`BankAccount deployed to ${bankAccount.address}`);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+async function writeContractABI(contract) {
+  const data = {
+    contract: {
+      address: contract.address,
+      signerAddress: contract.signer.address,
+      abi: contract.interface.format()
+    }
+  };
+  const content = JSON.stringify(data, null, 4);
+  await fs.writeFile("src/abi/deployment.json", content, {encoding: "UTF-8"});
+}
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
