@@ -15,6 +15,17 @@ contract BankAccount {
         uint256 amount,
         uint256 timestamp
     );
+    event WithdrawRequestApproved(
+        address indexed user,
+        uint256 indexed accountId,
+        uint256 indexed withdrawId,
+        uint256 timestamp
+    );
+    event WithdrawApproved(
+        uint256 indexed accountId,
+        uint256 indexed withdrawId,
+        uint256 timestamp
+    );
     event Withdraw(uint256 indexed withdrawId, uint256 timestamp);
     event AccountCreated(
         address[] owners,
@@ -118,6 +129,7 @@ contract BankAccount {
         accountOwner(accountId)
     {
         accounts[accountId].balance += msg.value;
+        emit Deposit(msg.sender, accountId, msg.value, block.timestamp);
     }
 
     function createAccount(address[] calldata otherOwners)
@@ -177,8 +189,13 @@ contract BankAccount {
         ];
         request.approvals++;
         request.ownersApproved[msg.sender] = true;
+
+        emit WithdrawRequestApproved(msg.sender, accountId, withdrawId, block.timestamp);
+
         if (request.approvals == accounts[accountId].owners.length - 1) {
             request.approved = true;
+
+            emit WithdrawApproved(accountId, withdrawId, block.timestamp);
         }
     }
 
@@ -210,6 +227,28 @@ contract BankAccount {
         returns (address[] memory)
     {
         return accounts[accountId].owners;
+    }
+
+    function getWithdrawalRequestApprovals(uint accountId, uint withdrawalRequestId) external view returns(address[] memory) {
+        address[] memory owners = accounts[accountId].owners;
+        uint numberOfApprovals = accounts[accountId].withdrawRequests[withdrawalRequestId].approvals;
+        address[] memory ownersApprovedArray = new address[](numberOfApprovals);
+        uint i = 0;
+        for(uint idx; idx < owners.length; idx++) {
+            if(accounts[accountId].withdrawRequests[withdrawalRequestId].ownersApproved[owners[idx]]) {
+                ownersApprovedArray[i] = owners[idx];
+                i++;
+            }
+        }
+        return ownersApprovedArray;
+    }
+
+    function isWithdrawalRequestApproved(uint256 accountId, uint256 withdrawId)
+        public
+        view
+        returns (bool)
+    {
+        return accounts[accountId].withdrawRequests[withdrawId].approved;
     }
 
     function getApprovals(uint256 accountId, uint256 withdrawId)

@@ -34,3 +34,6 @@ typechain-types
 cache
 artifacts
 
+# Deployment file
+deployment.json
+
