@@ -10,18 +10,22 @@ export const AuthProvider = ({ children }) => {
     const { web3, wallet, onVerifyAccount } = useContext(Web3Context);
 
     const onLogIn = async (nonce) => {
-        const signer = web3.getSigner();
-        const signature = await signer.signMessage(nonce);
-        const address = await signer.getAddress();
-        const isLegit = await onVerifyAccount(nonce, address, signature);
+        if (web3) {
+            const signer = web3.getSigner();
+            const signature = await signer.signMessage(nonce);
+            const address = await signer.getAddress();
+            const isLegit = await onVerifyAccount(nonce, address, signature);
 
-        if (isLegit) {
-            setUserId(wallet);
-            setIsLoggedIn(isLegit);
+            if (isLegit) {
+                setUserId(wallet);
+                setIsLoggedIn(isLegit);
+            }
         }
+
     };
     const onLogOut = () => {
-        console.log("Trying to log out!");
+        setUserId(null);
+        setIsLoggedIn(false);
     };
 
     useEffect(() => {

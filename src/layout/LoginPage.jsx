@@ -1,3 +1,4 @@
+import detectEthereumProvider from '@metamask/detect-provider';
 import React from 'react';
 import { useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,11 +7,36 @@ import AuthContext from '../context/AuthContext';
 
 function LoginPage({ selectedAccount }) {
     const { onLogIn } = useContext(AuthContext);
+
+    const connectToMetamask = async () => {
+        if (window.ethereum) {
+            const provider = await detectEthereumProvider();
+
+            if (provider) {
+                startApp(provider); // Initialize your app
+            } else {
+                console.log('Please install MetaMask!');
+            }
+
+            ethereum
+                .request({ method: 'eth_requestAccounts' })
+                .then(handleAccountsChanged)
+                .catch((err) => {
+                    if (err.code === 4001) {
+                        // EIP-1193 userRejectedRequest error
+                        // If this happens, the user rejected the connection request.
+                        console.log('Please connect to MetaMask.');
+                    } else {
+                        console.error(err);
+                    }
+                });
+        }
+    }
     return (
         <div className="w-screen h-screen flex justify-center items-center">
             <div className="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow-md sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
                 <div className="space-y-6">
-                    <h5 className="text-center text-xl font-medium text-gray-900 dark:text-white">Sign in to our platform</h5>
+                    <h5 className="text-center text-xl font-medium text-gray-900 dark:text-white">Welcome</h5>
                     <div>
                         <button
                             disabled={selectedAccount}
@@ -29,7 +55,7 @@ function LoginPage({ selectedAccount }) {
                             : null
                         }
                     </div>
-                    <button onClick={() => onLogIn(uuidv4())} type="submit" className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign in</button>
+                    <button onClick={() => onLogIn(uuidv4())} type="submit" className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Log in</button>
                 </div>
             </div>
         </div>
