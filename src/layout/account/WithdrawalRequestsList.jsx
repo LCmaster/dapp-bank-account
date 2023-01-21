@@ -1,19 +1,12 @@
 import React from 'react';
 
-function WithdrawalRequestsList({ accountId, contract, userId, requests }) {
+function WithdrawalRequestsList({ approvalHandler, withdrawalHandler, userId, requests }) {
+
     const onApproval = async (requestId) => {
-        if (!contract)
-            throw new Error("Smart Contract Missing");
-        await contract.approveWithdraw("" + accountId, "" + requestId);
+        if (await approvalHandler(requestId)) {
+            console.log("Request Approved");
+        }
     };
-
-    const onWithdraw = async (requestId) => {
-        if (!contract)
-            throw new Error("Smart Contract Missing");
-        await contract.withdraw("" + accountId, "" + requestId);
-    };
-
-    console.log(requests);
 
     return (
         <div>
@@ -77,7 +70,7 @@ function WithdrawalRequestsList({ accountId, contract, userId, requests }) {
                                                     {
                                                         (userId === tx.user)
                                                             ? (tx.approved)
-                                                                ? <button onClick={() => onWithdraw(tx.id)} className="font-medium uppercase text-red-600 dark:text-red-500 hover:underline">Withdraw</button>
+                                                                ? <button onClick={() => withdrawalHandler(tx.id)} className="font-medium uppercase text-red-600 dark:text-red-500 hover:underline">Withdraw</button>
                                                                 : null
                                                             : (!tx.approved)
                                                                 ? tx.approvedBy.includes(userId)

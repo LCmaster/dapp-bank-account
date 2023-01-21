@@ -1,39 +1,31 @@
 import React from 'react';
-import { useContext } from 'react';
-import AuthContext from '../context/AuthContext';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import AccountDetailsPage from './account/AccountDetailsPage';
-import Web3Context from '../context/Web3Context';
-import { AccountProvider } from '../context/AccountContext';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import AccountsPage from './account/AccountsPage';
+//PROVIDERS
+import { AccountProvider } from '../context/AccountContext';
+import { ContractProvider } from '../context/ContractContext';
+//COMPONENTS
 import Header from './Header';
+import AccountsPage from './account/AccountsPage';
+import AccountDetailsPage from './account/AccountDetailsPage';
 
 function Dashboard() {
-    const { userId, onLogOut } = useContext(AuthContext);
-    const { web3, contract } = useContext(Web3Context);
-
     const queryClient = new QueryClient();
-
     return (
         <QueryClientProvider client={queryClient}>
-            <div className='container mx-auto dashboard'>
-                <Header />
-
-                <div className="w-full p-2">
-
-                    <div className="mt-4">
-                        <AccountProvider>
-                            <BrowserRouter>
-                                <Routes>
-                                    <Route path='/' element={<AccountsPage />} />
-                                    <Route path='/accounts/:accountId' element={<AccountDetailsPage />} />
-                                </Routes>
-                            </BrowserRouter>
-                        </AccountProvider>
+            <ContractProvider>
+                <AccountProvider>
+                    <div className='container mx-auto dashboard'>
+                        <Header />
+                        <div className="w-full mt-4 p-2">
+                            <Routes>
+                                <Route path='/accounts/:accountId' element={<AccountDetailsPage />} />
+                                <Route path='*' element={<AccountsPage />} />
+                            </Routes>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </AccountProvider>
+            </ContractProvider>
         </QueryClientProvider>
     );
 }

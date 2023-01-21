@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import Web3Context from "./Web3Context";
 
 const AuthContext = createContext({});
@@ -7,32 +8,31 @@ export const AuthProvider = ({ children }) => {
     const [userId, setUserId] = useState();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    const navigate = useNavigate();
+
     const { web3, wallet, onVerifyAccount } = useContext(Web3Context);
 
     const onLogIn = async (nonce) => {
         if (web3) {
-            const signer = web3.getSigner();
-            const signature = await signer.signMessage(nonce);
-            const address = await signer.getAddress();
-            const isLegit = await onVerifyAccount(nonce, address, signature);
-
-            if (isLegit) {
+            if (await onVerifyAccount(nonce)) {
                 setUserId(wallet);
-                setIsLoggedIn(isLegit);
+                setIsLoggedIn(true);
+                navigate('/');
             }
         }
-
     };
     const onLogOut = () => {
         setUserId(null);
         setIsLoggedIn(false);
+        navigate('/login');
     };
 
     useEffect(() => {
         if (userId !== wallet) {
             setIsLoggedIn(false);
+            navigate('/login');
         }
-    }, [wallet]);
+    }, [wallet, userId, isLoggedIn]);
 
     return (
         <AuthContext.Provider value={{ userId, isLoggedIn, onLogIn, onLogOut }}>

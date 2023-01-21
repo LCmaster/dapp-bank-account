@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { useRef } from 'react';
+import Button from '../../components/Button';
 
 function DepositForm({ depositHandler }) {
+    const [isWaiting, setIsWaiting] = useState(false);
     const [amount, setAmount] = useState(0);
     const amountRef = useRef();
 
-    const onFormSubmit = async () => {
-        if (await depositHandler(amount)) setAmount(0);
+
+    const onFormSubmit = () => {
+        setIsWaiting(true);
+        if (depositHandler(amount)) {
+            setIsWaiting(false);
+            setAmount(0);
+        } else {
+            setIsWaiting(false);
+        }
     };
 
     return (
@@ -27,8 +36,9 @@ function DepositForm({ depositHandler }) {
                         />
                     </div>
                 </div>
-
-                <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Make a deposit</button>
+                <Button type="submit">
+                    {isWaiting ? "Waiting confirmation" : "Make a deposit"}
+                </Button>
             </form>
         </div>
     );

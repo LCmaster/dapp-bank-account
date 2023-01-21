@@ -1,29 +1,19 @@
-import React from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
+// CONTEXTS
 import AccountContext from '../../context/AccountContext';
+//COMPONENTS
 import AccountCard from './AccountCard';
+import Card from '../../components/Card';
 import CreateAccountForm from './CreateAccountForm';
 
 function AccountsPage() {
-    const { accounts } = useContext(AccountContext);
+    const { getAccountsQuery } = useContext(AccountContext);
+    const accountsQuery = getAccountsQuery();
 
     return (
         <div className='grid grid-cols-3 gap-4'>
-            {
-                accounts
-                && accounts.map(
-                    (accountId, id) => <AccountCard key={id} accountId={accountId} />
-                )
-            }
-            {
-                (accounts && accounts.length < 3)
-                && (
-                    <div className="account-btn p-4 flex rounded-lg bg-gray-200">
-                        <CreateAccountForm />
-                    </div>
-                )
-            }
-
+            {accountsQuery.data.map((accountId, id) => <AccountCard key={id} accountId={accountId} />)}
+            {accountsQuery.data.length < 3 && <Card><CreateAccountForm /></Card>}
         </div>
     );
 }
