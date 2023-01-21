@@ -15,9 +15,15 @@ function AccountsPage() {
                     (accountId, id) => <AccountCard key={id} accountId={accountId} />
                 )
             }
-            <div className="account-btn p-4 flex rounded-lg bg-gray-200">
-                <CreateAccountForm />
-            </div>
+            {
+                (accounts && accounts.length < 3)
+                && (
+                    <div className="account-btn p-4 flex rounded-lg bg-gray-200">
+                        <CreateAccountForm />
+                    </div>
+                )
+            }
+
         </div>
     );
 }

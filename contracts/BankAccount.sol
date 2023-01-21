@@ -5,7 +5,7 @@ contract BankAccount {
     event Deposit(
         address indexed user,
         uint256 indexed accountId,
-        uint256 value,
+        uint256 amount,
         uint256 timestamp
     );
     event WithdrawRequested(
@@ -26,7 +26,13 @@ contract BankAccount {
         uint256 indexed withdrawId,
         uint256 timestamp
     );
-    event Withdraw(uint256 indexed withdrawId, uint256 timestamp);
+    event Withdraw(
+        address indexed user, 
+        uint256 indexed accountId, 
+        uint256 indexed withdrawId, 
+        uint256 amount, 
+        uint256 timestamp
+    );
     event AccountCreated(
         address[] owners,
         uint256 indexed id,
@@ -164,6 +170,7 @@ contract BankAccount {
         sufficientBalance(accountId, amount)
     {
         uint256 id = nextWithdrawId;
+        
         WithdrawRequest storage request = accounts[accountId].withdrawRequests[
             id
         ];
@@ -194,7 +201,7 @@ contract BankAccount {
 
         if (request.approvals == accounts[accountId].owners.length - 1) {
             request.approved = true;
-
+            
             emit WithdrawApproved(accountId, withdrawId, block.timestamp);
         }
     }
@@ -214,7 +221,7 @@ contract BankAccount {
         (bool sent, ) = payable(msg.sender).call{value: amount}("");
         require(sent);
 
-        emit Withdraw(withdrawId, block.timestamp);
+        emit Withdraw(msg.sender, accountId, withdrawId, amount, block.timestamp);
     }
 
     function getBalance(uint256 accountId) public view returns (uint256) {
