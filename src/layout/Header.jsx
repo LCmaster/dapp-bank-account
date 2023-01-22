@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
 // CONTEXTS
-import AuthContext from '../context/AuthContext';
+import Web3Context from '../context/Web3Context';
 //COMPONENTS
 import EthereumButton from '../components/EthereumButton';
 
 function Header() {
-    const { userId } = useContext(AuthContext);
+    const { wallet } = useContext(Web3Context);
     return (
         <header className='p-2 flex justify-between items-center'>
             <div className="logo flex items-center gap-2">
@@ -15,7 +15,7 @@ function Header() {
                 <h2 className='font-bold leading-tight'>Shared<br />Accounts</h2>
 
             </div>
-            <EthereumButton walletAddr={userId} />
+            <EthereumButton walletAddr={wallet} />
         </header>
     )
 }

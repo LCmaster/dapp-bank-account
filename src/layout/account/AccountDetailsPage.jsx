@@ -1,22 +1,23 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { MdArrowBackIos } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom';
 //CONTEXTS
-import AuthContext from '../../context/AuthContext';
+import Web3Context from '../../context/Web3Context';
 import AccountContext from '../../context/AccountContext';
 //COMPONENTS
+import Card from '../../components/Card';
 import DepositForm from './DepositForm';
 import AccountOwners from './AccountOwners';
 import AccountBalance from './AccountBalance';
 import WithdrawalForm from './WithdrawalForm';
 import TransactionList from './TransactionList';
 import WithdrawalRequestsList from './WithdrawalRequestsList';
-import { useEffect } from 'react';
-import Card from '../../components/Card';
+
 
 function AccountDetails() {
     const { accountId } = useParams();
-    const { userId } = useContext(AuthContext);
+
+    const { wallet } = useContext(Web3Context);
 
     const {
         contract,
@@ -137,7 +138,7 @@ function AccountDetails() {
             </div>
             <AccountOwners owners={ownersQuery.data} />
             <WithdrawalRequestsList
-                userId={userId}
+                userId={wallet}
                 requests={withdrawalRequestsQuery.data}
                 approvalHandler={approveRequestHandler}
                 withdrawalHandler={withdrawalHandler}

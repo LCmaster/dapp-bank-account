@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 // CONTEXTS
-import AuthContext from '../../context/AuthContext';
+import Web3Context from '../../context/Web3Context';
 import AccountContext from '../../context/AccountContext';
 //COMPONENTS
 import AccountCard from './AccountCard';
@@ -10,13 +10,13 @@ import CreateAccountForm from './CreateAccountForm';
 
 function AccountsPage() {
 
-    const { userId } = useContext(AuthContext);
+    const { wallet } = useContext(Web3Context);
     const { contract, getAccountsQuery } = useContext(AccountContext);
 
     const accountsQuery = getAccountsQuery();
 
     const refetchOnAccountCreatedEvent = (owners, id, timestamp) => {
-        if (owners.includes(userId)) {
+        if (owners.includes(wallet)) {
             accountsQuery.refetch();
         }
     };

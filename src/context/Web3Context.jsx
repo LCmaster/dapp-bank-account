@@ -1,8 +1,6 @@
 import { ethers } from "ethers";
 import React, { createContext, useState } from "react";
 
-
-
 const Web3Context = createContext();
 
 export const Web3Provider = ({ children }) => {
@@ -13,9 +11,16 @@ export const Web3Provider = ({ children }) => {
         return await ethereum.request({ method: 'eth_requestAccounts' });
     }
 
-    const updateWallet = (accounts) => {
-        const walletAddr = ethers.utils.getAddress(accounts[0]);
-        setWallet(walletAddr);
+    const updateWallet = async (accounts) => {
+        console.log(accounts);
+        if (accounts.length > 0) {
+            const walletAddr = ethers.utils.getAddress(accounts[0]);
+            if (walletAddr !== wallet) {
+                setWallet(walletAddr);
+            }
+        } else {
+            setWallet(null);
+        }
     };
 
     const onVerifyAccount = async (nonce) => {
@@ -27,29 +32,24 @@ export const Web3Provider = ({ children }) => {
     };
 
     useState(() => {
-        if (window.ethereum) {
-            onConnectMetamask()
-                .then(accounts => {
-                    if (accounts.length == 0) {
-                        throw new Error("No account connected");
-                    }
-                    updateWallet(accounts);
-                }).then(() => {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    setWeb3(provider);
-                })
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            setWeb3(provider);
+
+            window.ethereum
+                .request({ method: 'eth_accounts' })
+                .then(updateWallet)
                 .catch((err) => {
                     console.error(err);
                 });
-
             window.ethereum.on('accountsChanged', updateWallet);
             return () => {
                 window.ethereum.removeListener('accountsChanged', updateWallet);
             };
-        } else {
-            console.error('Please install MetaMask!', error);
+        } catch (e) {
+            console.error(e);
         }
-    }, []);
+    }, [web3, wallet]);
 
     return (
         <Web3Context.Provider value={{

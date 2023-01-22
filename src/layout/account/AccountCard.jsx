@@ -52,7 +52,7 @@ function AccountCard({ accountId }) {
                 <div className="chart aspect-video">
                     <BalanceChart data={statsQuery.data} />
                 </div>
-                <LinkButton to={`accounts/${accountId}`}>Select account</LinkButton>
+                <LinkButton to={`/accounts/${accountId}`}>Select account</LinkButton>
             </div>
         </Card>
     );

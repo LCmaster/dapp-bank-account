@@ -1,22 +1,28 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 //PROVIDERS
-import { AuthProvider } from './context/AuthContext'
-import { Web3Provider } from './context/Web3Context'
+import Web3Context from "./context/Web3Context";
 //COMPONENTS
 import LoginPage from "./layout/LoginPage";
 import Dashboard from "./layout/Dashboard";
 
 function App() {
+  const { wallet } = useContext(Web3Context);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (wallet) {
+      navigate("/accounts");
+    } else {
+      navigate("/login");
+    }
+  }, [wallet]);
+
   return (
-    <Web3Provider>
-      <AuthProvider>
-        <Routes>
-          <Route path='/*' element={<Dashboard />} />
-          <Route path='/login' element={<LoginPage />} />
-        </Routes>
-      </AuthProvider>
-    </Web3Provider>
+    <Routes>
+      <Route path='/login' element={<LoginPage />} />
+      <Route path='/accounts/*' element={<Dashboard />} />
+    </Routes>
   );
 }
 
