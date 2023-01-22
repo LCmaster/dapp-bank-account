@@ -8,9 +8,9 @@ function DepositForm({ depositHandler }) {
     const amountRef = useRef();
 
 
-    const onFormSubmit = () => {
+    const onFormSubmit = async () => {
         setIsWaiting(true);
-        if (depositHandler(amount)) {
+        if (await depositHandler(amount)) {
             setIsWaiting(false);
             setAmount(0);
         } else {
@@ -36,7 +36,7 @@ function DepositForm({ depositHandler }) {
                         />
                     </div>
                 </div>
-                <Button type="submit">
+                <Button type="submit" disabled={isWaiting}>
                     {isWaiting ? "Waiting confirmation" : "Make a deposit"}
                 </Button>
             </form>

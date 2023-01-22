@@ -1,19 +1,19 @@
 import React from 'react'
 
 import {
-    AreaChart,
-    Area,
     CartesianGrid,
     ResponsiveContainer,
+    Line,
+    LineChart,
 } from "recharts";
 
 function BalanceChart({ data }) {
     return (
         <ResponsiveContainer width="100%" height="99.9%">
-            <AreaChart data={data} >
+            <LineChart data={data} >
                 <CartesianGrid strokeDasharray="3 3" />
-                <Area type="monotone" dataKey="balance" stroke="#8884d8" fill="#8884d8" />
-            </AreaChart>
+                <Line type="monotone" dataKey="balance" stroke="#8884d8" />
+            </LineChart >
         </ResponsiveContainer>
     );
 }

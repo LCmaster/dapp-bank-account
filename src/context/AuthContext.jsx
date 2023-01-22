@@ -29,8 +29,11 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         if (userId !== wallet) {
-            setIsLoggedIn(false);
-            navigate('/login');
+            setUserId(wallet);
+            setIsLoggedIn(true);
+            navigate('/');
+            // setIsLoggedIn(false);
+            // navigate('/login');
         }
     }, [wallet, userId, isLoggedIn]);
 

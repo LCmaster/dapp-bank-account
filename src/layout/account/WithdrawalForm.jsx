@@ -34,7 +34,7 @@ function WithdrawalForm({ requestHandler }) {
                         />
                     </div>
                 </div>
-                <Button type="submit">
+                <Button type="submit" disabled={isWaiting}>
                     {isWaiting ? "Waiting confirmation" : "Make a request"}
                 </Button>
             </form>

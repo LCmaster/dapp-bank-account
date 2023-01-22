@@ -35,6 +35,45 @@ function AccountDetails() {
     const withdrawalRequestsQuery = getWithdrawalRequestsQuery(accountId);
     const transactionsQuery = getTransactionsQuery(accountId);
 
+    const depositHandler = async (amount) => {
+        try {
+            await onDeposit(accountId, amount);
+            balanceQuery.refetch();
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    };
+    const withdrawalRequestHandler = async (amount) => {
+        try {
+            await onWithdrawalRequest(accountId, amount);
+            withdrawalRequestsQuery.refetch();
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+    const approveRequestHandler = async (requestId) => {
+        try {
+            await onApproveRequest(accountId, requestId);
+            withdrawalRequestsQuery.refetch();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    const withdrawalHandler = async (requestId) => {
+        try {
+            await onWithdrawal(accountId, requestId);
+            balanceQuery.refetch();
+            transactionsQuery.refetch();
+            withdrawalRequestsQuery.refetch();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <div className='grid grid-flow-row auto-rows-min gap-6'>
             <div className="w-full py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
@@ -44,15 +83,15 @@ function AccountDetails() {
                 <div className="col-span-2">
                     <AccountBalance accountId={accountId} balance={balanceQuery.data} chartData={statsQuery.data} />
                 </div>
-                <DepositForm depositHandler={(amount) => onDeposit(accountId, amount)} />
-                <WithdrawalForm requestHandler={(amount) => onWithdrawalRequest(accountId, amount)} />
+                <DepositForm depositHandler={depositHandler} />
+                <WithdrawalForm requestHandler={withdrawalRequestHandler} />
             </div>
             <AccountOwners owners={ownersQuery.data} />
             <WithdrawalRequestsList
                 userId={userId}
                 requests={withdrawalRequestsQuery.data}
-                approvalHandler={(requestId) => onApproveRequest(accountId, requestId)}
-                withdrawalHandler={(requestId) => onWithdrawal(accountId, requestId)}
+                approvalHandler={approveRequestHandler}
+                withdrawalHandler={withdrawalHandler}
             />
             <TransactionList transactions={transactionsQuery.data} />
         </div>

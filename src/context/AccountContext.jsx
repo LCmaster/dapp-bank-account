@@ -118,11 +118,11 @@ export const AccountProvider = ({ children }) => {
     const getTransactions = async (accountId) => {
         const depositsFilter = contract.filters.Deposit(null, accountId);
         const deposits = contract
-            .queryFilter(depositsFilter, -10, "latest");
+            .queryFilter(depositsFilter, 0, "latest");
 
         const withdrawalsFilter = contract.filters.Withdraw(null, accountId);
         const withdrawals = contract
-            .queryFilter(withdrawalsFilter, -10, "latest");
+            .queryFilter(withdrawalsFilter, 0, "latest");
 
         return Promise
             .all([deposits, withdrawals])
@@ -130,20 +130,20 @@ export const AccountProvider = ({ children }) => {
                 return events
                     .flatMap(array => array)
                     .sort((a, b) => a.args.timestamp - b.args.timestamp)
-                    .reverse()
                     .map(ev => {
                         return {
                             timestamp: ev.args.timestamp.toNumber(),
                             event: `${ev.event} of ${ethers.utils.formatEther(ev.args.amount.toString())} ETH by ${ev.args.user}`
                         }
-                    });
-            });
+                    })
+                    .reverse();
+            })
+            .then(data => data.length >= 10 ? data.slice(0, 10) : data);
     };
 
     const onCreateAccount = async (owners) => {
         const tx = await contract.createAccount(owners);
-        await tx.wait();
-        query.refetch();
+        return await tx.wait();
     };
 
     const onDeposit = async (accountId, amount) => {
@@ -153,15 +153,17 @@ export const AccountProvider = ({ children }) => {
 
     const onWithdrawalRequest = async (accountId, amount) => {
         const tx = await contract.requestWithdraw("" + accountId, ethers.utils.parseUnits("" + amount, "ether"));
-        return tx.wait();
+        return await tx.wait();
     };
 
     const onApproveRequest = async (accountId, requestId) => {
-        return await contract.approveWithdraw("" + accountId, "" + requestId);
+        const tx = await contract.approveWithdraw("" + accountId, "" + requestId);
+        return await tx.wait();
     };
 
     const onWithdrawal = async (accountId, requestId) => {
-        return await contract.withdraw("" + accountId, "" + requestId);
+        const tx = await contract.withdraw("" + accountId, "" + requestId);
+        return await tx.wait();
     };
 
     const getAccountsQuery = () => {
@@ -229,9 +231,7 @@ export const AccountProvider = ({ children }) => {
             }
         );
 
-    }
-
-
+    };
 
     return (
         <AccountContext.Provider value={{

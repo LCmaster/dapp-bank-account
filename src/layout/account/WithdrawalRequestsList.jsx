@@ -1,11 +1,25 @@
 import React from 'react';
+import { useState } from 'react';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import TextButton from '../../components/TextButton';
 
 function WithdrawalRequestsList({ approvalHandler, withdrawalHandler, userId, requests }) {
+    const [isWaiting, setIsWaiting] = useState([]);
+
+    const applyAction = async (requestId, handler) => {
+        setIsWaiting([...isWaiting, requestId]);
+        await handler(requestId);
+        const index = isWaiting.indexOf(requestId);
+        isWaiting.splice(index, 1);
+        setIsWaiting([...isWaiting]);
+    }
 
     const onApproval = async (requestId) => {
-        if (await approvalHandler(requestId)) {
-            console.log("Request Approved");
-        }
+        await applyAction(requestId, approvalHandler);
+    };
+
+    const onWithdrawal = async (requestId) => {
+        await applyAction(requestId, withdrawalHandler);
     };
 
     return (
@@ -70,13 +84,21 @@ function WithdrawalRequestsList({ approvalHandler, withdrawalHandler, userId, re
                                                     {
                                                         (userId === tx.user)
                                                             ? (tx.approved)
-                                                                ? <button onClick={() => withdrawalHandler(tx.id)} className="font-medium uppercase text-red-600 dark:text-red-500 hover:underline">Withdraw</button>
+                                                                ? <TextButton disabled={isWaiting.includes(tx.id)} color="red" onClick={() => onWithdrawal(tx.id)}>
+                                                                    {
+                                                                        isWaiting.includes(tx.id) ? <LoadingSpinner /> : "Withdraw"
+                                                                    }
+                                                                </TextButton>
                                                                 : null
                                                             : (!tx.approved)
                                                                 ? tx.approvedBy.includes(userId)
-                                                                    ? <p className="font-medium uppercase text-green-600 dark:text-green-500">Approved</p>
-                                                                    : <button onClick={() => onApproval(tx.id)} className="font-medium uppercase text-blue-600 dark:text-blue-500 hover:underline">Approve</button>
-                                                                : <p className="font-medium uppercase text-green-600 dark:text-green-500">Approved</p>
+                                                                    ? <TextButton color="green" disabled={true} >Approved</TextButton>
+                                                                    : <TextButton disabled={isWaiting.includes(tx.id)} color="blue" onClick={() => onApproval(tx.id)}>
+                                                                        {
+                                                                            isWaiting.includes(tx.id) ? <LoadingSpinner /> : "Approve"
+                                                                        }
+                                                                    </TextButton>
+                                                                : <TextButton color="green" disabled={true} >Approved</TextButton>
                                                     }
                                                 </td>
                                             </tr>
