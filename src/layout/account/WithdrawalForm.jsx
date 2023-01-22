@@ -17,7 +17,7 @@ function WithdrawalForm({ requestHandler }) {
     };
 
     return (
-        <div className='w-full h-full p-4 flex flex-col justify-between rounded-lg bg-gray-200'>
+        <>
             <h3 className='mb-4 font-bold text-md'>Request Withdrawal</h3>
             <form onSubmit={(ev) => { ev.preventDefault(); onFormSubmit(); }} className="w-full h-full flex flex-col justify-between gap-4">
                 <div className="amount">
@@ -40,7 +40,7 @@ function WithdrawalForm({ requestHandler }) {
                     {isWaiting ? "Waiting confirmation" : "Make a request"}
                 </Button>
             </form>
-        </div>
+        </>
     );
 }
 

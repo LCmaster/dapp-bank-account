@@ -17,7 +17,7 @@ function Dashboard() {
                 <AccountProvider>
                     <div className='container mx-auto dashboard'>
                         <Header />
-                        <div className="w-full mt-4 p-2">
+                        <div className="w-full mt-4 py-2 px-4">
                             <Routes>
                                 <Route path='/accounts/:accountId' element={<AccountDetailsPage />} />
                                 <Route path='*' element={<AccountsPage />} />

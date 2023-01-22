@@ -6,7 +6,7 @@ import BalanceChart from '../../components/BalanceChart';
 
 function AccountBalance({ accountId, balance, chartData }) {
     return (
-        <div className='w-full h-full p-4 flex flex-col justify-between rounded-lg bg-gray-200'>
+        <>
 
             {
                 accountId !== null
@@ -19,7 +19,7 @@ function AccountBalance({ accountId, balance, chartData }) {
             <div className="chart aspect-video">
                 <BalanceChart data={chartData} />
             </div>
-        </div>
+        </>
     );
 }
 

@@ -12,6 +12,7 @@ import WithdrawalForm from './WithdrawalForm';
 import TransactionList from './TransactionList';
 import WithdrawalRequestsList from './WithdrawalRequestsList';
 import { useEffect } from 'react';
+import Card from '../../components/Card';
 
 function AccountDetails() {
     const { accountId } = useParams();
@@ -122,12 +123,17 @@ function AccountDetails() {
             <div className="w-full py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                 <Link to={"/"} className="flex gap-2 items-center"><MdArrowBackIos /> Back</Link>
             </div>
-            <div className="grid grid-cols-4 gap-4">
-                <div className="col-span-2">
+            <div className="grid grid-cols-1 grid-rows-[auto_auto_auto] gap-4 md:grid-cols-3 md:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1">
+                <Card className="w-full md:row-span-2 md:col-span-2 lg:row-span-1">
                     <AccountBalance accountId={accountId} balance={balanceQuery.data} chartData={statsQuery.data} />
-                </div>
-                <DepositForm depositHandler={depositHandler} />
-                <WithdrawalForm requestHandler={withdrawalRequestHandler} />
+                </Card>
+                <Card className="w-full">
+                    <DepositForm depositHandler={depositHandler} />
+                </Card>
+
+                <Card className="w-full">
+                    <WithdrawalForm requestHandler={withdrawalRequestHandler} />
+                </Card>
             </div>
             <AccountOwners owners={ownersQuery.data} />
             <WithdrawalRequestsList
