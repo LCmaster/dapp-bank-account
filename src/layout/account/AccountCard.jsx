@@ -1,21 +1,42 @@
-import { ethers } from 'ethers';
-import React, { useContext } from 'react';
-import { useQuery } from 'react-query';
-import BalanceChart from '../../components/BalanceChart';
+import React, { useContext, useEffect } from 'react';
+//CONTEXTS
+import AccountContext from '../../context/AccountContext';
+//COMPONENTS
 import Card from '../../components/Card';
 import LinkButton from '../../components/LinkButton';
-import AccountContext from '../../context/AccountContext';
-import ContractContext from '../../context/ContractContext';
+import BalanceChart from '../../components/BalanceChart';
 
-import Web3Context from '../../context/Web3Context';
 
 function AccountCard({ accountId }) {
-    const { getBalanceQuery, getStatsQuery } = useContext(AccountContext);
-
-
+    const { getBalanceQuery, getStatsQuery, contract } = useContext(AccountContext);
 
     const balanceQuery = getBalanceQuery(accountId);
     const statsQuery = getStatsQuery(accountId);
+
+    const refetchOnDepositEvent = (user, account, amount, timestamp) => {
+        if (account.toNumber() == accountId) {
+            balanceQuery.refetch();
+            statsQuery.refetch();
+        }
+    };
+    const refetchOnWithdrawalEvent = (user, account, withdrawId, amount, timestamp) => {
+        if (account.toNumber() == accountId) {
+            balanceQuery.refetch();
+            statsQuery.refetch();
+        }
+    };
+
+    useEffect(() => {
+        if (contract) {
+            contract.on("Withdraw", refetchOnWithdrawalEvent);
+            contract.on("Deposit", refetchOnDepositEvent);
+
+            return () => {
+                contract.off("Deposit", refetchOnDepositEvent);
+                contract.off("Withdraw", refetchOnWithdrawalEvent);
+            }
+        }
+    }, [contract]);
 
     return (
         <Card>

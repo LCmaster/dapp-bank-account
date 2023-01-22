@@ -11,12 +11,14 @@ import AccountBalance from './AccountBalance';
 import WithdrawalForm from './WithdrawalForm';
 import TransactionList from './TransactionList';
 import WithdrawalRequestsList from './WithdrawalRequestsList';
+import { useEffect } from 'react';
 
 function AccountDetails() {
     const { accountId } = useParams();
     const { userId } = useContext(AuthContext);
 
     const {
+        contract,
         getOwnersQuery,
         getBalanceQuery,
         getStatsQuery,
@@ -54,7 +56,7 @@ function AccountDetails() {
             console.error(e);
             return false;
         }
-    }
+    };
     const approveRequestHandler = async (requestId) => {
         try {
             await onApproveRequest(accountId, requestId);
@@ -72,7 +74,48 @@ function AccountDetails() {
         } catch (e) {
             console.error(e);
         }
-    }
+    };
+
+    const refetchOnDepositEvent = (user, account, amount, timestamp) => {
+        if (account.toNumber() == accountId) {
+            transactionsQuery.refetch();
+            balanceQuery.refetch();
+            statsQuery.refetch();
+        }
+    };
+    const refetchOnWithdrawalRequestedEvent = (user, account, withdrawId, amount, timestamp) => {
+        if (account.toNumber() == accountId) {
+            withdrawalRequestsQuery.refetch();
+        }
+    };
+    const refetchOnWithdrawalRequestApprovedEvent = (user, account, withdrawId, amount, timestamp) => {
+        if (account.toNumber() == accountId) {
+            withdrawalRequestsQuery.refetch();
+        }
+    };
+    const refetchOnWithdrawalEvent = (user, account, withdrawId, amount, timestamp) => {
+        if (account.toNumber() == accountId) {
+            transactionsQuery.refetch();
+            balanceQuery.refetch();
+            statsQuery.refetch();
+        }
+    };
+
+
+    useEffect(() => {
+        if (contract) {
+            contract.on("WithdrawRequestApproved", refetchOnWithdrawalRequestApprovedEvent);
+            contract.on("WithdrawRequested", refetchOnWithdrawalRequestedEvent);
+            contract.on("Withdraw", refetchOnWithdrawalEvent);
+            contract.on("Deposit", refetchOnDepositEvent);
+            return () => {
+                contract.off("Deposit", refetchOnDepositEvent);
+                contract.off("Withdraw", refetchOnWithdrawalEvent);
+                contract.on("WithdrawRequested", refetchOnWithdrawalRequestedEvent);
+                contract.on("WithdrawRequestApproved", refetchOnWithdrawalRequestApprovedEvent);
+            }
+        }
+    }, [contract]);
 
     return (
         <div className='grid grid-flow-row auto-rows-min gap-6'>

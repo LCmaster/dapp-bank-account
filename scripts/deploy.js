@@ -6,7 +6,7 @@ async function main() {
   const bankAccount = await BankAccount.deploy();
 
   await bankAccount.deployed();
-  await writeContractABI(bankAccount)
+  await writeContractABI(bankAccount);
   console.log(`BankAccount deployed to ${bankAccount.address}`);
 }
 
@@ -14,6 +14,7 @@ async function writeContractABI(contract) {
   const data = {
     contract: {
       address: contract.address,
+      block:contract.deployTransaction.blockNumber,
       signerAddress: contract.signer.address,
       abi: contract.interface.format()
     }

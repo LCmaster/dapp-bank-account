@@ -1,14 +1,35 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 // CONTEXTS
+import AuthContext from '../../context/AuthContext';
 import AccountContext from '../../context/AccountContext';
 //COMPONENTS
 import AccountCard from './AccountCard';
 import Card from '../../components/Card';
 import CreateAccountForm from './CreateAccountForm';
 
+
 function AccountsPage() {
-    const { getAccountsQuery } = useContext(AccountContext);
+
+    const { userId } = useContext(AuthContext);
+    const { contract, getAccountsQuery } = useContext(AccountContext);
+
     const accountsQuery = getAccountsQuery();
+
+    const refetchOnAccountCreatedEvent = (owners, id, timestamp) => {
+        if (owners.includes(userId)) {
+            accountsQuery.refetch();
+        }
+    };
+
+    useEffect(() => {
+        if (contract) {
+            contract.on("AccountCreated", refetchOnAccountCreatedEvent);
+
+            return () => {
+                contract.off("AccountCreated", refetchOnAccountCreatedEvent);
+            }
+        }
+    }, [contract]);
 
     return (
         <div className='grid grid-cols-3 gap-4'>

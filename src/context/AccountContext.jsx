@@ -1,8 +1,10 @@
 import React, { useContext, createContext } from "react";
 import { ethers } from "ethers";
 import { useQuery } from "react-query";
-
+//CONTEXTS
 import ContractContext from "./ContractContext";
+//RESOURCES
+import { contract as contractInfo } from '../abi/deployment.json';
 
 const AccountContext = createContext();
 
@@ -26,11 +28,11 @@ export const AccountProvider = ({ children }) => {
     const getAccountStats = async (accountId) => {
         const depositsFilter = contract.filters.Deposit(null, accountId);
         const deposits = contract
-            .queryFilter(depositsFilter, -10, "latest")
+            .queryFilter(depositsFilter, contractInfo.block, "latest")
 
         const withdrawalsFilter = contract.filters.Withdraw(null, accountId);
         const withdrawals = contract
-            .queryFilter(withdrawalsFilter, -10, "latest");
+            .queryFilter(withdrawalsFilter, contractInfo.block, "latest");
 
         return Promise
             .all([deposits, withdrawals])
@@ -66,13 +68,13 @@ export const AccountProvider = ({ children }) => {
 
     const getWithdrawalRequests = async (accountId) => {
         const withdrawalRequestedFilter = contract.filters.WithdrawRequested(null, accountId);
-        const withdrawalRequests = await contract.queryFilter(withdrawalRequestedFilter, 0, "latest");
+        const withdrawalRequests = await contract.queryFilter(withdrawalRequestedFilter, contractInfo.block, "latest");
 
         const pendingWithdrawalRequests = await Promise
             .all(withdrawalRequests
                 .map(async (entry) => {
                     const withdrawalsFilter = contract.filters.Withdraw(null, accountId, entry.args.withdrawId.toString());
-                    const wasWithdrawn = await contract.queryFilter(withdrawalsFilter, 0, "latest");
+                    const wasWithdrawn = await contract.queryFilter(withdrawalsFilter, contractInfo.block, "latest");
 
                     return {
                         withdrawn: wasWithdrawn.length > 0,
@@ -85,7 +87,7 @@ export const AccountProvider = ({ children }) => {
         const requestWithApprovals = await Promise.all(
             requestsThatWerentWithdrawn.map(async (entry) => {
                 const withdrawalApprovedFilter = contract.filters.WithdrawApproved(accountId, entry.args.withdrawId.toString(), null);
-                const isApproved = await contract.queryFilter(withdrawalApprovedFilter, 0, "latest");
+                const isApproved = await contract.queryFilter(withdrawalApprovedFilter, contractInfo.block, "latest");
 
                 return {
                     approved: isApproved.length > 0,
@@ -98,7 +100,7 @@ export const AccountProvider = ({ children }) => {
             .map(async (entry) => {
                 const withdrawalRequestsApprovedFilter = contract.filters.WithdrawRequestApproved(null, accountId, entry.request.args.withdrawId.toString());
                 const approvalsArray = await contract
-                    .queryFilter(withdrawalRequestsApprovedFilter, 0, "latest");
+                    .queryFilter(withdrawalRequestsApprovedFilter, contractInfo.block, "latest");
 
                 const approvals = approvalsArray.map(approvalEntry => approvalEntry.args.user);
                 return {
@@ -118,11 +120,11 @@ export const AccountProvider = ({ children }) => {
     const getTransactions = async (accountId) => {
         const depositsFilter = contract.filters.Deposit(null, accountId);
         const deposits = contract
-            .queryFilter(depositsFilter, 0, "latest");
+            .queryFilter(depositsFilter, contractInfo.block, "latest");
 
         const withdrawalsFilter = contract.filters.Withdraw(null, accountId);
         const withdrawals = contract
-            .queryFilter(withdrawalsFilter, 0, "latest");
+            .queryFilter(withdrawalsFilter, contractInfo.block, "latest");
 
         return Promise
             .all([deposits, withdrawals])
@@ -175,7 +177,6 @@ export const AccountProvider = ({ children }) => {
                 initialData: []
             }
         );
-
     }
 
     const getBalanceQuery = (accountId) => {
@@ -235,6 +236,7 @@ export const AccountProvider = ({ children }) => {
 
     return (
         <AccountContext.Provider value={{
+            contract,
             getAccountsQuery,
             onCreateAccount,
             onDeposit,

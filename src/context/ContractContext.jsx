@@ -10,7 +10,7 @@ const ContractContext = createContext();
 
 export const ContractProvider = ({ children }) => {
     const [contract, setContract] = useState();
-    const { web3, wallet } = useContext(Web3Context);
+    const { web3 } = useContext(Web3Context);
     const { isLoggedIn } = useContext(AuthContext);
 
     useEffect(() => {

@@ -21,16 +21,21 @@ function CreateAccountForm() {
         setInputs([...inputs]);
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const addicionatlOwners = inputs
             .filter((entry) => entry && entry.trim() !== "")
             .map(entry => ethers.utils.getAddress(entry));
-        onCreateAccount(addicionatlOwners);
+        try {
+            await onCreateAccount(addicionatlOwners);
+            setInputs([""]);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="w-full h-full flex flex-col justify-between gap-4">
+        <form onSubmit={(ev) => handleSubmit(ev)} className="w-full h-full flex flex-col justify-between gap-4">
             <div className="top-part">
                 <h2 className='mb-4 text-2xl'>Create an account</h2>
                 <div className="owners">
@@ -50,7 +55,10 @@ function CreateAccountForm() {
                         )
                         )}
                     </div>
-                    <button onClick={() => addOwner()} type="button" className="w-full flex justify-center items-center py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"><AiOutlinePlus /></button>
+                    {
+                        inputs.length < 3
+                        && <button onClick={() => addOwner()} type="button" className="w-full flex justify-center items-center py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"><AiOutlinePlus /></button>
+                    }
                 </div>
             </div>
 

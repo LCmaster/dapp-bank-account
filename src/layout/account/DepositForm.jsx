@@ -28,6 +28,8 @@ function DepositForm({ depositHandler }) {
                         <input
                             ref={amountRef}
                             type="number"
+                            min={0.000000000000000001}
+                            step={0.000000000000000001}
                             placeholder="0.00"
                             className="text-right mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             id='deposit-amount'

@@ -84,7 +84,7 @@ function WithdrawalRequestsList({ approvalHandler, withdrawalHandler, userId, re
                                                     {
                                                         (userId === tx.user)
                                                             ? (tx.approved)
-                                                                ? <TextButton disabled={isWaiting.includes(tx.id)} color="red" onClick={() => onWithdrawal(tx.id)}>
+                                                                ? <TextButton disabled={isWaiting.includes(tx.id)} onClick={() => onWithdrawal(tx.id)} className="text-red-600 dark:text-red-500">
                                                                     {
                                                                         isWaiting.includes(tx.id) ? <LoadingSpinner /> : "Withdraw"
                                                                     }
@@ -92,13 +92,13 @@ function WithdrawalRequestsList({ approvalHandler, withdrawalHandler, userId, re
                                                                 : null
                                                             : (!tx.approved)
                                                                 ? tx.approvedBy.includes(userId)
-                                                                    ? <TextButton color="green" disabled={true} >Approved</TextButton>
-                                                                    : <TextButton disabled={isWaiting.includes(tx.id)} color="blue" onClick={() => onApproval(tx.id)}>
+                                                                    ? <TextButton disabled={true} className="text-green-600 dark:text-green-500">Approved</TextButton>
+                                                                    : <TextButton disabled={isWaiting.includes(tx.id)} onClick={() => onApproval(tx.id)} className="text-blue-600 dark:text-blue-500">
                                                                         {
                                                                             isWaiting.includes(tx.id) ? <LoadingSpinner /> : "Approve"
                                                                         }
                                                                     </TextButton>
-                                                                : <TextButton color="green" disabled={true} >Approved</TextButton>
+                                                                : <TextButton disabled={true} className="text-green-600 dark:text-green-500" >Approved</TextButton>
                                                     }
                                                 </td>
                                             </tr>
