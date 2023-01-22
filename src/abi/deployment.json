@@ -1,0 +1,26 @@
+{
+    "contract": {
+        "address": "0x3B08Ea87EB3757d84f10A7Df0e7fC2C3EF7cc5be",
+        "block": null,
+        "signerAddress": "0x5BcF402A2282bF42D37F6Bb566E2308388E1864f",
+        "abi": [
+            "event AccountCreated(address[] owners, uint256 indexed id, uint256 timestamp)",
+            "event Deposit(address indexed user, uint256 indexed accountId, uint256 amount, uint256 timestamp)",
+            "event Withdraw(address indexed user, uint256 indexed accountId, uint256 indexed withdrawId, uint256 amount, uint256 timestamp)",
+            "event WithdrawApproved(uint256 indexed accountId, uint256 indexed withdrawId, uint256 timestamp)",
+            "event WithdrawRequestApproved(address indexed user, uint256 indexed accountId, uint256 indexed withdrawId, uint256 timestamp)",
+            "event WithdrawRequested(address indexed user, uint256 indexed accountId, uint256 indexed withdrawId, uint256 amount, uint256 timestamp)",
+            "function approveWithdraw(uint256 accountId, uint256 withdrawId)",
+            "function createAccount(address[] otherOwners)",
+            "function deposit(uint256 accountId) payable",
+            "function getAccounts() view returns (uint256[])",
+            "function getApprovals(uint256 accountId, uint256 withdrawId) view returns (uint256)",
+            "function getBalance(uint256 accountId) view returns (uint256)",
+            "function getOwners(uint256 accountId) view returns (address[])",
+            "function getWithdrawalRequestApprovals(uint256 accountId, uint256 withdrawalRequestId) view returns (address[])",
+            "function isWithdrawalRequestApproved(uint256 accountId, uint256 withdrawId) view returns (bool)",
+            "function requestWithdraw(uint256 accountId, uint256 amount)",
+            "function withdraw(uint256 accountId, uint256 withdrawId)"
+        ]
+    }
+}
