@@ -10,6 +10,7 @@ const AccountContext = createContext();
 
 export const AccountProvider = ({ children }) => {
     const { contract } = useContext(ContractContext);
+    const deploymentBlock = contractInfo.block ? contractInfo.block : 0;
 
     const getAccounts = async () => {
         const accounts = await contract.getAccounts();
@@ -28,11 +29,11 @@ export const AccountProvider = ({ children }) => {
     const getAccountStats = async (accountId) => {
         const depositsFilter = contract.filters.Deposit(null, accountId);
         const deposits = contract
-            .queryFilter(depositsFilter, contractInfo.block, "latest")
+            .queryFilter(depositsFilter, deploymentBlock, "latest")
 
         const withdrawalsFilter = contract.filters.Withdraw(null, accountId);
         const withdrawals = contract
-            .queryFilter(withdrawalsFilter, contractInfo.block, "latest");
+            .queryFilter(withdrawalsFilter, deploymentBlock, "latest");
 
         return Promise
             .all([deposits, withdrawals])
@@ -68,13 +69,13 @@ export const AccountProvider = ({ children }) => {
 
     const getWithdrawalRequests = async (accountId) => {
         const withdrawalRequestedFilter = contract.filters.WithdrawRequested(null, accountId);
-        const withdrawalRequests = await contract.queryFilter(withdrawalRequestedFilter, contractInfo.block, "latest");
+        const withdrawalRequests = await contract.queryFilter(withdrawalRequestedFilter, deploymentBlock, "latest");
 
         const pendingWithdrawalRequests = await Promise
             .all(withdrawalRequests
                 .map(async (entry) => {
                     const withdrawalsFilter = contract.filters.Withdraw(null, accountId, entry.args.withdrawId.toString());
-                    const wasWithdrawn = await contract.queryFilter(withdrawalsFilter, contractInfo.block, "latest");
+                    const wasWithdrawn = await contract.queryFilter(withdrawalsFilter, deploymentBlock, "latest");
 
                     return {
                         withdrawn: wasWithdrawn.length > 0,
@@ -87,7 +88,7 @@ export const AccountProvider = ({ children }) => {
         const requestWithApprovals = await Promise.all(
             requestsThatWerentWithdrawn.map(async (entry) => {
                 const withdrawalApprovedFilter = contract.filters.WithdrawApproved(accountId, entry.args.withdrawId.toString(), null);
-                const isApproved = await contract.queryFilter(withdrawalApprovedFilter, contractInfo.block, "latest");
+                const isApproved = await contract.queryFilter(withdrawalApprovedFilter, deploymentBlock, "latest");
 
                 return {
                     approved: isApproved.length > 0,
@@ -100,7 +101,7 @@ export const AccountProvider = ({ children }) => {
             .map(async (entry) => {
                 const withdrawalRequestsApprovedFilter = contract.filters.WithdrawRequestApproved(null, accountId, entry.request.args.withdrawId.toString());
                 const approvalsArray = await contract
-                    .queryFilter(withdrawalRequestsApprovedFilter, contractInfo.block, "latest");
+                    .queryFilter(withdrawalRequestsApprovedFilter, deploymentBlock, "latest");
 
                 const approvals = approvalsArray.map(approvalEntry => approvalEntry.args.user);
                 return {
@@ -120,11 +121,11 @@ export const AccountProvider = ({ children }) => {
     const getTransactions = async (accountId) => {
         const depositsFilter = contract.filters.Deposit(null, accountId);
         const deposits = contract
-            .queryFilter(depositsFilter, contractInfo.block, "latest");
+            .queryFilter(depositsFilter, deploymentBlock, "latest");
 
         const withdrawalsFilter = contract.filters.Withdraw(null, accountId);
         const withdrawals = contract
-            .queryFilter(withdrawalsFilter, contractInfo.block, "latest");
+            .queryFilter(withdrawalsFilter, deploymentBlock, "latest");
 
         return Promise
             .all([deposits, withdrawals])
