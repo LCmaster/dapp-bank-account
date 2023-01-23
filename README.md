@@ -8,4 +8,4 @@ Each withdrawal request must be approved by all other members (aka owners) befor
 
 A test version was deployed to the Sepolia testnet.
 
-You can try it [here](https://sparkly-melba-aa6c92.netlify.app/)
+You can find the smart contract on [Etherscan](https://sepolia.etherscan.io/address/0x3B08Ea87EB3757d84f10A7Df0e7fC2C3EF7cc5be) or try the app [here](https://sparkly-melba-aa6c92.netlify.app/)
