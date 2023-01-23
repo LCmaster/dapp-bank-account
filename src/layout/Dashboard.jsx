@@ -18,7 +18,7 @@ function Dashboard() {
                     <div className="w-full mt-4 py-2 px-4">
                         <Routes>
                             <Route path='/accounts/:accountId' element={<AccountDetailsPage />} />
-                            <Route path='/accounts' element={<AccountsPage />} />
+                            <Route path='*' element={<AccountsPage />} />
                         </Routes>
                     </div>
                 </div>
