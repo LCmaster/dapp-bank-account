@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 //PROVIDERS
 import Web3Context from "./context/Web3Context";
 //COMPONENTS
@@ -9,8 +9,10 @@ import Dashboard from "./layout/Dashboard";
 function App() {
   const { wallet } = useContext(Web3Context);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    console.log(location);
     if (wallet) {
       navigate("/accounts");
     } else {

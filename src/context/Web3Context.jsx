@@ -12,7 +12,6 @@ export const Web3Provider = ({ children }) => {
     }
 
     const updateWallet = async (accounts) => {
-        console.log(accounts);
         if (accounts.length > 0) {
             const walletAddr = ethers.utils.getAddress(accounts[0]);
             if (walletAddr !== wallet) {
