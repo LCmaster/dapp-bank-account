@@ -13,7 +13,6 @@ function LoginPage() {
     };
 
     useState(() => {
-        console.log(wallet);
         if (wallet) {
             console.log("redirecting home");
             navigate("/accounts");
