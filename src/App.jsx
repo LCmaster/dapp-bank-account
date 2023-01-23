@@ -9,10 +9,8 @@ import Dashboard from "./layout/Dashboard";
 function App() {
   const { wallet } = useContext(Web3Context);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
-    console.log(location);
     if (wallet) {
       navigate("/accounts");
     } else {
